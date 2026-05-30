@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Si-Cireng Bin | Sistem Pintar Kelola Tekstil & Ekonomi Sirkular</title>
+
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Playfair+Display:wght@700;900&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --primary: #10b981;
+            --primary-dark: #022c22;
+            --accent: #f59e0b;
+            --danger: #ef4444;
+            --processing: #3b82f6;
+            --bg-color: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.85);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(16, 185, 129, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(245, 158, 11, 0.1) 0px, transparent 50%);
+            color: #1e293b;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* 1. RUNNING TEXT */
+        .marquee-container {
+            background: var(--primary-dark);
+            color: var(--accent);
+            padding: 12px 0;
+            font-weight: 800;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        /* 2. NAVBAR */
+        nav {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 1.2rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo {
+            font-family: 'Playfair Display', serif;
+            font-weight: 900;
+            font-size: 1.8rem;
+            color: var(--primary-dark);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--primary-dark), #047857);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            border: none;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 20px rgba(2, 44, 34, 0.2);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 25px rgba(2, 44, 34, 0.3);
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 2rem auto;
+            padding: 0 5%;
+        }
+
+        /* 3. HERO BANNER */
+        .hero-section {
+            background: linear-gradient(rgba(2, 44, 34, 0.8), rgba(2, 44, 34, 0.9)), url('https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&q=80&w=1200') center/cover;
+            border-radius: 40px;
+            padding: 4rem 3rem;
+            color: white;
+            margin-bottom: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(2, 44, 34, 0.3);
+            text-align: center;
+        }
+
+        .hero-section h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+
+        .hero-section p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* 4. SECTIONS HEADER */
+        .news-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 2rem;
+        }
+
+        .news-header div {
+            width: 5px;
+            height: 40px;
+            background: var(--accent);
+            border-radius: 5px;
+        }
+
+        .news-header h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            color: var(--primary-dark);
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 4rem;
+        }
+
+        .news-card {
+            background: white;
+            border-radius: 30px;
+            overflow: hidden;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.03);
+            transition: all 0.4s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 25px 45px rgba(16, 185, 129, 0.1);
+        }
+
+        .news-img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+        }
+
+        .news-body {
+            padding: 1.8rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .news-card h4 {
+            color: var(--primary-dark);
+            font-size: 1.1rem;
+            font-weight: 800;
+            margin-bottom: 12px;
+        }
+
+        .news-card p {
+            font-size: 0.9rem;
+            color: #64748b;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            flex-grow: 1;
+        }
+
+        .news-link {
+            font-size: 0.8rem;
+            font-weight: 800;
+            color: var(--primary);
+            text-decoration: none;
+            padding-bottom: 3px;
+            border-bottom: 2px solid var(--primary);
+            transition: 0.3s;
+            align-self: flex-start;
+        }
+
+        .news-link:hover {
+            color: var(--primary-dark);
+            border-color: var(--primary-dark);
+        }
+
+        /* 5. DASHBOARD IOT */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.7fr 1.3fr;
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+        }
+
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .glass-box {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px);
+            border-radius: 40px;
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.05);
+        }
+
+        #map {
+            height: 500px;
+            width: 100%;
+            border-radius: 30px;
+            border: 3px solid white;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.05);
+            z-index: 1;
+        }
+
+        .bin-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            margin-top: 1.5rem;
+        }
+
+        .bin-item {
+            background: white;
+            border-radius: 25px;
+            padding: 1.5rem;
+            border: 1px solid #e2e8f0;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .bin-item:hover {
+            transform: translateX(10px);
+            border-color: var(--primary);
+            box-shadow: 0 15px 30px rgba(16, 185, 129, 0.1);
+        }
+
+        .status-pill {
+            font-size: 0.7rem;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 12px;
+            text-transform: uppercase;
+        }
+
+        .bg-ok {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .bg-warn {
+            background: #fef9c3;
+            color: #854d0e;
+            border: 1px solid var(--accent);
+        }
+
+        .bg-danger {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid var(--danger);
+        }
+
+        .bg-pick {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px dashed var(--processing);
+        }
+
+        .progress-bg {
+            height: 12px;
+            background: #f1f5f9;
+            border-radius: 20px;
+            margin: 15px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 20px;
+        }
+
+        /* 6. FORM & REWARD STYLES */
+        .form-input {
+            width: 100%;
+            padding: 18px;
+            margin: 12px 0;
+            border-radius: 20px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+            transition: 0.3s;
+            background: rgba(255, 255, 255, 0.7);
+        }
+
+        .form-input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        select.form-input {
+            appearance: none;
+            cursor: pointer;
+        }
+
+        .poin-hero {
+            background: var(--primary-dark);
+            color: white;
+            padding: 50px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 25px 50px rgba(2, 44, 34, 0.3);
+        }
+
+        .reward-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+            margin-top: 25px;
+        }
+
+        .reward-item {
+            background: white;
+            padding: 20px;
+            border-radius: 25px;
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.02);
+            transition: 0.3s;
+        }
+
+        .reward-item:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .reward-item h4 {
+            font-size: 0.95rem;
+            color: var(--primary-dark);
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .reward-item p {
+            font-size: 0.85rem;
+            font-weight: 800;
+            color: #64748b;
+            margin-bottom: 10px;
+        }
+
+        .reward-item span {
+            font-size: 0.75rem;
+            font-weight: 800;
+            color: var(--primary);
+            background: #dcfce7;
+            padding: 5px 12px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        /* 7. HOTLINE & FOOTER */
+        .hotline-fab {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--accent), #d97706);
+            color: white;
+            padding: 16px 28px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1rem;
+            text-decoration: none;
+            box-shadow: 0 15px 30px rgba(245, 158, 11, 0.4);
+            z-index: 9999;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        footer {
+            background: var(--primary-dark);
+            color: white;
+            padding: 50px 5%;
+            text-align: center;
+            border-top: 6px solid var(--accent);
+        }
+
+        .copyright-text {
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .copyright-text b {
+            color: var(--accent);
+            font-weight: 900;
+            font-size: 1.2rem;
+        }
+
+        /* 8. PAGE LOGIC */
+        .page {
+            display: none;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* PERUBAHAN COMPONENT: CARDS ECO-SHOP DENGAN LAYOUT PREMIUM & ACTION BUTTONS */
+        .shop-card {
+            background: white;
+            border-radius: 30px;
+            padding: 1.8rem;
+            border: 1px solid #f1f5f9;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.02);
+            text-align: center;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .shop-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(16, 185, 129, 0.12);
+        }
+
+        .shop-img {
+            width: 100%;
+            height: 160px;
+            background: #f8fafc;
+            border-radius: 22px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            border: 1px solid #f1f5f9;
+        }
+
+        .btn-shop-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .btn-shop-action {
+            flex: 1;
+            padding: 10px 5px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 800;
+            cursor: pointer;
+            border: none;
+            transition: 0.2s;
+        }
+
+        .btn-cash {
+            background: #e2e8f0;
+            color: #334155;
+        }
+
+        .btn-cash:hover {
+            background: #cbd5e1;
+        }
+
+        .btn-pts {
+            background: var(--primary-dark);
+            color: white;
+        }
+
+        .btn-pts:hover {
+            background: #047857;
+        }
+
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .leaderboard-table th,
+        .leaderboard-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .leaderboard-table th {
+            background-color: rgba(16, 185, 129, 0.1);
+            color: var(--primary-dark);
+            font-weight: 800;
+        }
+
+        .receipt-box {
+            background: #fff;
+            border: 2px dashed #cbd5e1;
+            border-radius: 20px;
+            padding: 20px;
+            margin-top: 30px;
+            text-align: left;
+            max-width: 450px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .receipt-line {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .wallet-card {
+            background: linear-gradient(135deg, #022c22, #065f46);
+            color: white;
+            padding: 25px;
+            border-radius: 30px;
+            box-shadow: 0 15px 30px rgba(2, 44, 34, 0.2);
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .wallet-info h4 {
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .wallet-info h2 {
+            font-size: 2.2rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        .wallet-search-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .wallet-input {
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-weight: 600;
+            outline: none;
+            font-size: 0.85rem;
+        }
+
+        .wallet-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .btn-wallet {
+            padding: 8px 15px;
+            border-radius: 12px;
+            border: none;
+            background: var(--accent);
+            color: var(--primary-dark);
+            font-weight: 800;
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="marquee-container">
+        <marquee scrollamount="12">
+            ⚠ WASPADA: INDONESIA DARURAT SAMPAH TEKSTIL! • 2,3 JUTA TON LIMBAH PER TAHUN • BANDUNG LAUTAN FASHION,
+            JANGAN JADI LAUTAN SAMPAH • ♻ SI-CIRENG ECO-SYSTEM: UBAH PAKAIAN BEKAS JADI PRODUK UPCYCLE KREATIF &
+            BEASISWA • HUBUNGI HOTLINE UNTUK BANTUAN
+        </marquee>
+    </div>
+
+    <nav>
+        <div class="logo" onclick="showPage('page-home')">♻️ Si-Cireng Bin</div>
+        <button class="btn-main" onclick="startScan()">Login & Scan Barcode Bin</button>
+    </nav>
+
+    <a href="https://wa.me/6281234567890" target="_blank" class="hotline-fab"
+        onclick="alert('Menghubungkan ke Call Center...')">
+        📞 Layanan Hotline
+    </a>
+
+    <div class="container">
+
+        <div id="page-home" class="page active">
+
+            <div class="hero-section">
+                <h1>Ubah Limbah Fashion Menjadi Harapan</h1>
+                <p>Selamat datang di platform Ekonomi Sirkular berbasis IoT pertama di Bandung. Lacak, Setor, dan
+                    tukarkan pakaian bekas Anda menjadi produk sirkular estetik bernilai jual tinggi atau beasiswa
+                    pendidikan.</p>
+            </div>
+
+            <div class="wallet-card">
+                <div class="wallet-info">
+                    <h4>Dompet Sirkular Anda</h4>
+                    <h2 id="display-wallet-name">Warga Bandung (Anonim)</h2>
+                    <p style="font-size: 0.9rem; opacity: 0.8; margin-top: 5px;">ID Akun: <span
+                            id="display-wallet-email">Belum Masuk</span></p>
+                </div>
+                <div style="text-align: right;">
+                    <span style="font-size: 0.85rem; opacity: 0.8; text-transform: uppercase; font-weight: 800;">Total
+                        Akumulasi Saldo</span>
+                    <h1 style="font-size: 3rem; color: var(--accent); font-family: 'Playfair Display', serif;"
+                        id="display-wallet-poin">0 <span
+                            style="font-size: 1rem; font-family: 'Plus Jakarta Sans'; color: white;">Pts</span></h1>
+
+                    <div class="wallet-search-box">
+                        <input type="email" id="search-email-input" class="wallet-input"
+                            placeholder="Masukkan Email Anda...">
+                        <button class="btn-wallet" onclick="checkUserPoints()">Cek Poin</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="glass-box">
+                    <h3
+                        style="margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark);">
+                        📍 Real-time IoT Map
+                    </h3>
+                    <div id="map"></div>
+                </div>
+                <div class="sidebar">
+                    <h3
+                        style="margin-bottom: 1.5rem; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark);">
+                        📊 Status Perangkat IoT
+                    </h3>
+                    <div id="bin-list-container" class="bin-list"></div>
+                </div>
+            </div>
+
+            <div class="dashboard-grid" style="margin-top: 2rem;">
+                <div class="glass-box" style="grid-column: 1 / -1;">
+                    <h3
+                        style="margin-bottom: 1rem; font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--primary-dark);">
+                        🏆 Leaderboard Dampak Lingkungan Sektor (Bulan Ini)
+                    </h3>
+                    <table class="leaderboard-table">
+                        <thead>
+                            <tr>
+                                <th>Peringkat</th>
+                                <th>Sektor Cluster Bin</th>
+                                <th>Total Bahan Terkumpul</th>
+                                <th>Kontribusi Produk Jadi</th>
+                                <th>Eco-Poin Wilayah</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><b>🥇 1</b></td>
+                                <td>Gate 1 Telkom Univ</td>
+                                <td>412 Pcs</td>
+                                <td>85 Item Tekstil</td>
+                                <td style="color: var(--primary); font-weight: 800;">41.200 Pts</td>
+                            </tr>
+                            <tr>
+                                <td><b>🥈 2</b></td>
+                                <td>Sektor Sukapura</td>
+                                <td>380 Pcs</td>
+                                <td>64 Item Tekstil</td>
+                                <td style="color: var(--primary); font-weight: 800;">38.000 Pts</td>
+                            </tr>
+                            <tr>
+                                <td><b>🥉 3</b></td>
+                                <td>Sektor Sukabirus</td>
+                                <td>245 Pcs</td>
+                                <td>40 Item Tekstil</td>
+                                <td style="color: var(--primary); font-weight: 800;">24.500 Pts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="news-header" style="margin-top: 4rem;">
+                <div></div>
+                <h2>Katalog Kreasi Upcycle (Eco-Shop)</h2>
+            </div>
+            <p style="color: #64748b; margin-top: -1.5rem; margin-bottom: 2rem; font-weight: 600;">
+                Klik tombol "Tukar Poin" untuk langsung memotong saldo Dompet Sirkular Anda jika akun sudah terdeteksi!
+            </p>
+
+            <div class="news-grid" style="margin-bottom: 4rem;">
+                <div class="shop-card">
+                    <div>
+                        <div class="shop-img">🛍️</div>
+                        <h4 style="color: var(--primary-dark); font-weight: 800; margin-bottom: 8px;">Si-Cireng Tote Bag
+                            Denim</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px; line-height: 1.5;">Olah ulang
+                            limbah jeans tebal Sukapura.</p>
+                    </div>
+                    <div>
+                        <span class="status-pill bg-ok" style="font-size: 0.75rem; width: 100%;">Rp45.000 / 1.500
+                            Poin</span>
+                        <div class="btn-shop-group">
+                            <button class="btn-shop-action btn-cash"
+                                onclick="buyWithCash('Si-Cireng Tote Bag Denim', 45000)">Beli Tunai</button>
+                            <button class="btn-shop-action btn-body btn-pts"
+                                onclick="redeemWithPoints('Si-Cireng Tote Bag Denim', 15000)">Tukar Poin</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-card">
+                    <div>
+                        <div class="shop-img">👝</div>
+                        <h4 style="color: var(--primary-dark); font-weight: 800; margin-bottom: 8px;">Pouch Kosmetik
+                            Estetik</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px; line-height: 1.5;">Kreasi
+                            kain perca motif katun Ciganitri.</p>
+                    </div>
+                    <div>
+                        <span class="status-pill bg-ok" style="font-size: 0.75rem; width: 100%;">Rp25.000 / 900
+                            Poin</span>
+                        <div class="btn-shop-group">
+                            <button class="btn-shop-action btn-cash"
+                                onclick="buyWithCash('Pouch Kosmetik Estetik', 25000)">Beli Tunai</button>
+                            <button class="btn-shop-action btn-body btn-pts"
+                                onclick="redeemWithPoints('Pouch Kosmetik Estetik', 900)">Tukar Poin</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="shop-card">
+                    <div>
+                        <div class="shop-img">🕋</div>
+                        <h4 style="color: var(--primary-dark); font-weight: 800; margin-bottom: 8px;">Sajadah Travel
+                            Eco-Poly</h4>
+                        <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 12px; line-height: 1.5;">Serat
+                            poliester daur ulang baju olahraga.</p>
+                    </div>
+                    <div>
+                        <span class="status-pill bg-ok" style="font-size: 0.75rem; width: 100%;">Rp60.000 / 2.000
+                            Poin</span>
+                        <div class="btn-shop-group">
+                            <button class="btn-shop-action btn-cash"
+                                onclick="buyWithCash('Sajadah Travel Eco-Poly', 60000)">Beli Tunai</button>
+                            <button class="btn-shop-action btn-body btn-pts"
+                                onclick="redeemWithPoints('Sajadah Travel Eco-Poly', 2000)">Tukar Poin</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="news-header">
+                <div></div>
+                <h2>Warta Darurat Tekstil</h2>
+            </div>
+
+            <div class="news-grid">
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1532306024440-3b6f95ee0b71?auto=format&fit=crop&q=80&w=500"
+                        alt="Limbah Pakaian" class="news-img">
+                    <div class="news-body">
+                        <h4>⚠️ Krisis Limbah Peringkat 2</h4>
+                        <p>Indonesia merupakan penyumbang sampah tekstil peringkat 2 di dunia. Fast fashion mempercepat
+                            penumpukan serat sintetis berbahaya di timbunan tanah alam Parahyangan.</p>
+                        <a href="https://share.google/faasSEnXODY3r7rQa" target="_blank" class="news-link">BACA
+                            REFERENSI 1 →</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1618477388954-7852f32655ec?auto=format&fit=crop&q=80&w=500"
+                        alt="Polusi Air Kimia Tekstil" class="news-img">
+                    <div class="news-body">
+                        <h4>🌊 Polusi Sungai & Tanah</h4>
+                        <p>Zat pewarna tekstil kimia dan luruhan mikroplastik dari pakaian bekas mulai mencemari
+                            ekosistem rantai makanan air parigi. Saatnya beralih ke wadah pembuangan pintar pintar
+                            bersama IoT.</p>
+                        <a href="https://share.google/rlIpY9GPag4iBoWIJ" target="_blank" class="news-link">BACA
+                            REFERENSI 2 →</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1582738411706-bfc8e691d1c2?auto=format&fit=crop&q=80&w=500"
+                        alt="Daur Ulang Kreatif" class="news-img">
+                    <div class="news-body">
+                        <h4>♻️ Solusi Circular Economy</h4>
+                        <p>Melalui Si-Cireng, kain usang Anda tidak berakhir menumpuk di TPA, melainkan diproses kembali
+                            menjadi produk bernilai tinggi berdaya guna tinggi. Mari wujudkan Bandung Barat Zero Waste.
+                        </p>
+                        <a href="https://share.google/tQrdXhZgT8eeB1vMf" target="_blank" class="news-link">BACA
+                            REFERENSI 3 →</a>
+                    </div>
+                </div>
+                <div class="news-card">
+                    <img src="https://images.unsplash.com/photo-1544816155-12df9643f363?auto=format&fit=crop&q=80&w=500"
+                        alt="Pemberdayaan Komunitas Lokal" class="news-img">
+                    <div class="news-body">
+                        <h4>🌱 Kolaborasi Penjahit Lokal</h4>
+                        <p>Aliansi Pengrajin Tekstil Bojongsoang resmi digandeng oleh tim Si-Cireng untuk mempercepat
+                            pengolahan limbah kain pilahan menjadi komoditas siap guna.</p>
+                        <a href="#" onclick="alert('Artikel rilis pers resmi sedang disusun oleh humas proyek.')"
+                            class="news-link">BACA BERITA TERBARU →</a>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="page-form" class="page">
+            <div class="glass-box" style="max-width: 550px; margin: 0 auto; text-align: center;">
+                <h2
+                    style="font-family: 'Playfair Display', serif; margin-bottom: 10px; color: var(--primary-dark); font-size: 2.2rem;">
+                    Form Penyetoran
+                </h2>
+                <p style="color: #64748b; font-size: 1rem; margin-bottom: 30px;">Anda memindai di: <b>NODE-02 (Sektor
+                        Sukapura)</b></p>
+
+                <input type="email" id="user-email" class="form-input"
+                    placeholder="Masukkan Email Akun (Kunci Utama ID)" onchange="autoFillUser()">
+                <input type="text" id="user-name" class="form-input" placeholder="Nama Lengkap Penyetor">
+
+                <select id="fabric-type" class="form-input">
+                    <option value="" disabled selected>Pilih Klasifikasi Kondisi Tekstil</option>
+                    <option value="120">Kategori A: Layak Pakai Eksklusif (120 Poin/Pcs)</option>
+                    <option value="90">Kategori B: Serat Denim/Katun Tebal (90 Poin/Pcs)</option>
+                    <option value="50">Kategori C: Kain Rusak/Perca Potong (50 Poin/Pcs)</option>
+                </select>
+
+                <input type="number" id="qty" class="form-input" placeholder="Jumlah Pakaian (Potong/Pcs)">
+
+                <button class="btn-main" style="width: 100%; padding: 20px; font-size: 1.1rem; margin-top: 20px;"
+                    onclick="goToPoin()">Submit Data & Akumulasikan Poin</button>
+                <button
+                    style="background: none; border: none; color: #64748b; margin-top: 20px; font-weight: 600; cursor: pointer; text-decoration: underline;"
+                    onclick="showPage('page-home')">Batalkan</button>
+            </div>
+        </div>
+
+        <div id="page-poin" class="page">
+            <div class="glass-box">
+                <div class="poin-hero">
+                    <p style="text-transform: uppercase; letter-spacing: 3px; font-weight: 800; opacity: 0.9;">Total
+                        Poin Baru Ditambahkan</p>
+                    <h1 style="font-size: 6rem; margin: 10px 0; font-family: 'Playfair Display', serif;" id="res-poin">0
+                    </h1>
+                    <p style="font-size: 1rem; opacity: 0.9;" id="wallet-accumulation-text">Saldo poin total Anda aman
+                        tersimpan di pangkalan data local.</p>
+                </div>
+
+                <div class="receipt-box">
+                    <h4
+                        style="text-align: center; font-family: 'Playfair Display', serif; margin-bottom: 15px; color: var(--primary-dark);">
+                        📄 TRANSAKSI DISETUJUI & TERCATAT</h4>
+                    <div class="receipt-line"><span>Identitas Penyetor:</span><b id="rec-nama">-</b></div>
+                    <div class="receipt-line"><span>Email Akun:</span><b id="rec-email">-</b></div>
+                    <div class="receipt-line"><span>Poin Tambahan:</span><b id="rec-added"
+                            style="color: var(--accent);">+0 Pts</b></div>
+                    <div class="receipt-line" style="border-top: 1px solid #cbd5e1; padding-top: 8px; margin-top: 8px;">
+                        <span>Total Akumulasi Saldo:</span><b id="rec-total"
+                            style="color: var(--primary); font-size: 1.1rem;">0 Pts</b>
+                    </div>
+                </div>
+
+                <div
+                    style="margin-top: 40px; padding: 25px; border-radius: 25px; background: #f0fdf4; border: 2px solid var(--primary);">
+                    <h4 style="color: var(--primary-dark); font-size: 1.2rem; margin-bottom: 10px;">🚚 Transparansi Alur
+                        Bahan (Traceability)</h4>
+                    <p style="font-size: 0.95rem; color: #166534; line-height: 1.6;">
+                        Sistem IoT mendeteksi setoran Anda. Pakaian berbahan <b>Katun/Denim</b> akan langsung
+                        dialokasikan otomatis ke <b>Aliansi Pengrajin Kain Perca Bojongsoang</b> untuk diproduksi ulang
+                        menjadi item fesyen baru di halaman Eco-Shop.
+                    </p>
+                </div>
+
+                <h3
+                    style="margin-top: 40px; color: var(--primary-dark); font-family: 'Playfair Display', serif; font-size: 1.8rem;">
+                    🎁 Katalog Penukaran Poin (Voucher & Produk Upcycle)
+                </h3>
+                <div class="reward-grid">
+                    <div class="reward-item" style="border: 2px solid var(--primary); background: #f0fdf4;">
+                        <h4>Tote Bag Upcycle</h4>
+                        <p>Min. 1.500 Poin</p><span style="background: var(--primary-dark); color: white;">Produk
+                            Si-Cireng</span>
+                    </div>
+                    <div class="reward-item" style="border: 2px solid var(--primary); background: #f0fdf4;">
+                        <h4>Pouch Kain Estetik</h4>
+                        <p>Min. 900 Poin</p><span style="background: var(--primary-dark); color: white;">Produk
+                            Si-Cireng</span>
+                    </div>
+                    <div class="reward-item">
+                        <h4>Voucher Makan</h4>
+                        <p>Min. 1.500 Poin</p><span>Nilai: Rp50.000</span>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 40px;">
+                    <button class="btn-main" style="background: #475569; padding: 15px 40px; box-shadow: none;"
+                        onclick="location.reload()">Selesai & Keluar Halaman</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <footer>
+        <div class="logo" style="color: white; justify-content: center; margin-bottom: 20px;">♻️ Si-Cireng Bin</div>
+        <p class="copyright-text">
+            © 2026 Proyek Solusi Lingkungan Berkelanjutan.<br>
+            Ide Brilian, Inovasi Sirkular, dan Pengembangan Sistem Website ini dikembangkan penuh oleh:<br>
+            <b>IMAM, HAYFA, RAFLI</b>
+        </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Render Default Map & List Sektor
+            const bins = [
+                { id: "NODE-01", name: "Gate 1 Telkom Univ", coords: [-6.9744, 107.6316], fill: 30, status: "ok" },
+                { id: "NODE-02", name: "Sektor Sukapura", coords: [-6.9702, 107.6345], fill: 75, status: "warning" },
+                { id: "NODE-03", name: "Sektor Ciganitri", coords: [-6.9785, 107.6390], fill: 95, status: "danger" },
+                { id: "NODE-04", name: "Kantor Transmart Buah Batu", coords: [-6.9535, 107.6310], fill: 100, status: "pickup" },
+                { id: "NODE-05", name: "Sektor Sukabirus", coords: [-6.9760, 107.6320], fill: 45, status: "ok" }
+            ];
+
+            const map = L.map('map', { zoomControl: false }).setView([-6.9650, 107.6316], 14);
+            L.control.zoom({ position: 'bottomright' }).addTo(map);
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+            const container = document.getElementById('bin-list-container');
+            bins.forEach(bin => {
+                let config = { col: "#10b981", label: "Aman", class: "bg-ok", icon: "✅" };
+                if (bin.status === "warning") config = { col: "#f59e0b", label: "Hampir Penuh!", class: "bg-warn", icon: "⚠️" };
+                if (bin.status === "danger") config = { col: "#ef4444", label: "Penuh!", class: "bg-danger", icon: "❗" };
+                if (bin.status === "pickup") config = { col: "#3b82f6", label: "Dipickup Petugas", class: "bg-pick", icon: "🚛" };
+
+                const marker = L.circleMarker(bin.coords, { radius: 12, fillColor: config.col, color: "#fff", weight: 3, fillOpacity: 0.9 }).addTo(map);
+                marker.bindPopup(`<b>${config.icon} ${bin.name}</b><br>Status: ${config.label}`);
+
+                const card = document.createElement('div');
+                card.className = 'bin-item';
+                card.innerHTML = `
+                    <div style="display:flex;justify-content:space-between;align-items:center;">
+                        <b style="font-size:1rem; color:#022c22;">${bin.name}</b>
+                        <span class="status-pill ${config.class}">${config.icon} ${config.label}</span>
+                    </div>
+                    <div class="progress-bg"><div class="progress-fill" style="width:${bin.fill}%; background:${config.col}"></div></div>
+                `;
+                card.onclick = () => { map.flyTo(bin.coords, 17); marker.openPopup(); };
+                container.appendChild(card);
+            });
+
+            const lastUser = localStorage.getItem('last_logged_user');
+            if (lastUser) {
+                document.getElementById('search-email-input').value = lastUser;
+                checkUserPoints();
+            }
+        });
+
+        function showPage(id) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function startScan() {
+            alert("Sistem Membuka Kamera Scanner IoT...\n\nBarcode Terdeteksi Valid di: NODE-02 (Sektor Sukapura)");
+            showPage('page-form');
+        }
+
+        function autoFillUser() {
+            const email = document.getElementById('user-email').value.trim().toLowerCase();
+            if (!email) return;
+
+            const savedData = localStorage.getItem(`cireng_${email}`);
+            if (savedData) {
+                const userData = JSON.parse(savedData);
+                document.getElementById('user-name').value = userData.name;
+                alert(`Akun Terdeteksi! Selamat datang kembali, ${userData.name}.\nPoin Anda saat ini: ${userData.points} Pts.`);
+            }
+        }
+
+        function goToPoin() {
+            const email = document.getElementById('user-email').value.trim().toLowerCase();
+            const name = document.getElementById('user-name').value;
+            const fabricWeight = document.getElementById('fabric-type').value;
+            const qty = document.getElementById('qty').value;
+
+            if (!name || !email || !fabricWeight || !qty) return alert("Punten, mohon lengkapi seluruh data setoran pakaian Anda!");
+
+            const addedPoints = qty * parseInt(fabricWeight);
+
+            let currentPoints = 0;
+            const savedData = localStorage.getItem(`cireng_${email}`);
+            if (savedData) {
+                currentPoints = JSON.parse(savedData).points;
+            }
+
+            const newTotalPoints = currentPoints + addedPoints;
+
+            const userObject = { name: name, points: newTotalPoints };
+            localStorage.setItem(`cireng_${email}`, JSON.stringify(userObject));
+            localStorage.setItem('last_logged_user', email);
+
+            document.getElementById('res-poin').innerText = "+" + addedPoints;
+            document.getElementById('wallet-accumulation-text').innerText = `Sukses! Poin lama (${currentPoints} Pts) + Poin baru (${addedPoints} Pts). Total Dompet Anda menjadi ${newTotalPoints} Pts.`;
+
+            document.getElementById('rec-nama').innerText = name;
+            document.getElementById('rec-email').innerText = email;
+            document.getElementById('rec-added').innerText = "+" + addedPoints + " Pts";
+            document.getElementById('rec-total').innerText = newTotalPoints + " Pts";
+
+            showPage('page-poin');
+        }
+
+        function checkUserPoints() {
+            const email = document.getElementById('search-email-input').value.trim().toLowerCase();
+            if (!email) return alert("Masukkan email terdaftar untuk mengecek poin!");
+
+            const savedData = localStorage.getItem(`cireng_${email}`);
+            if (savedData) {
+                const userData = JSON.parse(savedData);
+                document.getElementById('display-wallet-name').innerText = userData.name;
+                document.getElementById('display-wallet-email').innerText = email;
+                document.getElementById('display-wallet-poin').innerHTML = `${userData.points} <span style="font-size: 1rem; font-family: 'Plus Jakarta Sans'; color: white;">Pts</span>`;
+                localStorage.setItem('last_logged_user', email);
+            } else {
+                alert("Email belum terdaftar di sistem sirkular Si-Cireng. Silakan lakukan setoran pertama di Smart Bin untuk membuat akun otomatis!");
+            }
+        }
+
+        // PERUBAHAN: LOGIKA INTEGRASI ECO-SHOP (BELI TUNAI & TUKAR POIN REAL-TIME)
+        function buyWithCash(productName, price) {
+            alert(`Membuka Gateway Pembayaran Mandiri/QRIS...\n\nProduk: ${productName}\nTotal Tagihan: Rp${price.toLocaleString('id-ID')}\n\nTerima kasih telah mendukung sirkular ekonomi pengrajin lokal Bandung!`);
+        }
+
+        function redeemWithPoints(productName, pointCost) {
+            const currentActiveEmail = localStorage.getItem('last_logged_user');
+
+            if (!currentActiveEmail) {
+                return alert("Punten, sistem tidak mendeteksi akun Anda!\n\nSilakan masukkan email Anda pada kolom 'Dompet Sirkular' di atas terlebih dahulu untuk memproses penukaran.");
+            }
+
+            const savedData = localStorage.getItem(`cireng_${currentActiveEmail}`);
+            if (!savedData) return alert("Akun tidak valid. Silakan cek kembali email Anda.");
+
+            let userData = JSON.parse(savedData);
+
+            if (userData.points < pointCost) {
+                return alert(`Maaf, saldo Dompet Sirkular Anda tidak mencukupi!\n\nProduk: ${productName}\nBiaya: ${pointCost} Pts\nSaldo Anda: ${userData.points} Pts\n\nYuk, tingkatkan setoran pakaian bekas Anda di Smart Bin terdekat!`);
+            }
+
+            // Eksekusi Pemotongan Poin Jika Saldo Cukup
+            const remainingPoints = userData.points - pointCost;
+            userData.points = remainingPoints;
+            localStorage.setItem(`cireng_${currentActiveEmail}`, JSON.stringify(userData));
+
+            // Refresh tampilan widget dompet di halaman utama secara instan
+            checkUserPoints();
+
+            alert(`🎉 PENUKARAN BERHASIL!\n\nProduk: ${productName}\nBiaya Terpotong: ${pointCost} Pts\nSisa Poin Anda: ${remainingPoints} Pts\n\nKode Pengambilan produk telah dikirimkan ke email dan nomor WhatsApp Anda.`);
+        }
+    </script>
+</body>
+
+</html>
